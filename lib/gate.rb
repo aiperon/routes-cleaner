@@ -7,7 +7,7 @@ class Gate
   attr_reader :passphrase
 
   def initialize(*args)
-    @passphrase = get_passphrase() #'Kans4s-i$-g01ng-by3-bye'
+    @passphrase = get_passphrase()
   end
 
   def get_passphrase
@@ -30,8 +30,12 @@ class Gate
   end
 
   def send_back!(source, parsed_data)
-    parsed_data.each do |route_details|
-      response = HTTParty.post(DATA_URL, body: route_details.merge(
+    parsed_data.each do |route|
+      %i(start_time end_time).each do |field|
+        route[field] = route[field].utc.iso8601.gsub(/Z\z/, '')
+      end
+
+      response = HTTParty.post(DATA_URL, body: route.merge(
         passphrase: @passphrase,
         source: source
       ))

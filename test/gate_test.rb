@@ -40,25 +40,18 @@ class GateTest < Minitest::Test
 
     source = 'dummy'
     data = [
-      {one: 1},
-      {two: 2},
-      {three: 3},
+      {start_time: Time.now, end_time: Time.now},
+      {start_time: Time.now, end_time: Time.now},
+      {start_time: Time.now, end_time: Time.now},
     ]
 
     main_opts = {passphrase: gate.passphrase, source: source}
 
-    stub_requests = []
-    data.each do |opts|
-      body = opts.merge(main_opts).to_a.map{|opt| opt.join('=') }.join('&')
-      stub_requests << stub_request(:post, Gate::DATA_URL).with({body: body}).
-        to_return(status: 200, body: "", headers: {})
-    end
+    stub_request = stub_request(:post, Gate::DATA_URL)
 
     gate.send_back!(source, data)
 
-    stub_requests.each do |stub_request|
-      assert_requested stub_request
-    end
+    assert_requested stub_request, times: data.length
   end
 
 private

@@ -3,25 +3,10 @@ require 'zip'
 module Normalizer
   class Sentinels
 
-    def self.unzip_data(content)
-      data = nil
-      Zip::File.open_buffer(content) do |zip_file|
-        zip_file.each do |entry|
-          next unless entry.name == 'sentinels/routes.csv'
-          data = zip_file.read(entry)
-        end
-      end
-      data
-    end
-
-    def self.parse(response)
-      return [] unless response.respond_to?(:headers) && response.headers['content-type'].include?('application/zip')
-
-      data = unzip_data(response.body)
-
+    def self.normalize(data)
       return [] unless data
 
-      csv = CSV.new(data, col_sep: ', ', headers: true)
+      csv = CSV.new(data['routes.csv'], col_sep: ', ', headers: true)
       routes = Hash.new{|h, v| h[v] = []}
       while row = csv.shift
         routes[row['route_id']] << row.to_hash
@@ -36,8 +21,8 @@ module Normalizer
         {
           start_node: start['node'],
           end_node: finish['node'],
-          start_time: Time.parse(start['time']).utc.iso8601.gsub(/Z\z/, ''),
-          end_time: Time.parse(finish['time']).utc.iso8601.gsub(/Z\z/, ''),
+          start_time: Time.parse(start['time']),
+          end_time: Time.parse(finish['time']),
         }
       end.compact
     end

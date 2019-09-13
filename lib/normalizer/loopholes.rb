@@ -1,6 +1,6 @@
 class Normalizer::Loopholes
 
-  def self.parse(response)
+  def self.normalize(data)
     []
   end
 
