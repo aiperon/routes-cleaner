@@ -50,13 +50,9 @@ module Normalizer
       data
     end
 
-    def valid_response?(response)
-      response.respond_to?(:headers) &&
-        response.headers['content-type'].include?('application/zip')
-    end
-
     def save_archive(source, response)
-      return unless valid_response?(response)
+      return unless response.respond_to?(:headers)
+      return unless response.headers['content-type'].include?('application/zip')
 
       content = response.body
       return if content.empty?

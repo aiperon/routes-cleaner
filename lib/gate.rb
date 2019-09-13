@@ -15,8 +15,8 @@ class Gate
 
     begin
       passphrase = JSON.parse(response.body).dig('pills', 'red', 'passphrase')
-    rescue JSON::ParserError => e
-      puts "#{e.message}\nTry again Neo…"
+    rescue JSON::ParserError
+      puts "Try again Neo…"
     end
 
     passphrase
